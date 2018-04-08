@@ -1,39 +1,35 @@
 <template>
-
-  <div>
-    <h1>{{ titulo }}</h1>
-
-    <ul>
-        <li v-for="foto of fotos">
-            <img :src="foto.url" :alt="foto.titulo">
-        </li>
-    </ul>
-
+  
+  <div class="corpo">
+    <meu-menu :rotas="routes"/>
+    <router-view></router-view>
   </div>
 
 </template>
 
 <script>
+import { routes } from './routes';
+import Menu from './components/shared/menu/Menu';
+
 export default {
+  components:{
+    'meu-menu': Menu
+  },
   data(){
-    return{
-      titulo: 'VuePics',
-      fotos:[
-        {
-          url: 'http://tudosobrecachorros.com.br/wp-content/uploads/cachorro-independente.jpg',
-          titulo: 'cachorro'
-        },
-        {
-          url: 'http://tudosobrecachorros.com.br/wp-content/uploads/cachorro-independente.jpg',
-          titulo: 'cachorrinho'
-        }
-      ]
+    return {
+      routes: routes
     }
+    
   }
   
 }
 </script>
 
 <style>
+  .corpo {
+    font-family: Helvetica, sans-serif;
+    margin: 0 auto;
+    width: 96%;
+  }
 
 </style>
