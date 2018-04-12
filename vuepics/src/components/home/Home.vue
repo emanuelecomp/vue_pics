@@ -2,6 +2,7 @@
   
   <div>
     <h1 class="centralizado">{{ titulo }}</h1>
+    <p v-show="mensagem" class="centralizado">{{ mensagem }}</p>
     <input type="search" class="filtro" v-on:input="filtro = $event.target.value" placeholder="Filtre por parte do título"></input>
     <ul class="lista-fotos">
         <li class="lista-fotos-item" v-for="foto of fotosComFiltro">
@@ -32,7 +33,8 @@ export default {
     return{
       titulo: 'VuePics',
       fotos:[],
-      filtro: ''
+      filtro: '',
+      mensagem: ''
     }
   },
 
@@ -49,14 +51,25 @@ export default {
 
   methods:{
     remove(foto){
-      alert('Remover a foto ' + foto.titulo)
+      this.resource.delete({ id: foto._id })
+          .then(() => {
+          let indice = this.fotos.indexOf(foto);
+          this.fotos.splice(indice, 1);
+          this.mensagem = 'Foto removida com sucesso';
+
+        }, err => {
+            console.log(err)
+            this.mensagem = 'Nao foi possível remover a foto';
+          });        
     }
   },
 
   created(){
-    this.$http.get('http://localhost:3000/v1/fotos')
-          .then(res => res.json())
-          .then(fotos => this.fotos = fotos)
+    this.resource = this.$resource('v1/fotos{/id}');
+    this.resource.query()
+            .then(res => res.json())
+            .then(fotos => this.fotos = fotos, err => console.log(err))
+          
   }
   
 }
