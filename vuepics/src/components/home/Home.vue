@@ -8,6 +8,9 @@
         <li class="lista-fotos-item" v-for="foto of fotosComFiltro">
           <meu-painel :titulo="foto.titulo">
             <imagem-responsiva v-meu-transform="15" :url="foto.url" :titulo="foto.titulo"></imagem-responsiva>
+            <router-link :to="{ name:'altera', params: { id: foto._id } }">
+              <meu-botao tipo="button" rotulo="Alterar"></meu-botao>
+            </router-link>
             <meu-botao tipo="button" rotulo="Remover" @botaoAtivado="remove(foto)" estilo="perigo"></meu-botao>
           </meu-painel>   
         </li>
@@ -20,6 +23,7 @@
 import Painel from '../shared/painel/Painel';
 import ImagemResponsiva from '../shared/imagem-responsiva/ImagemResponsiva';
 import Botao from '../shared/botao/Botao';
+import FotoService from '../../domain/foto/FotoService.js';
 
 export default {
   
@@ -51,7 +55,7 @@ export default {
 
   methods:{
     remove(foto){
-      this.resource.delete({ id: foto._id })
+      this.service.apaga(foto._id)
           .then(() => {
           let indice = this.fotos.indexOf(foto);
           this.fotos.splice(indice, 1);
@@ -65,10 +69,9 @@ export default {
   },
 
   created(){
-    this.resource = this.$resource('v1/fotos{/id}');
-    this.resource.query()
-            .then(res => res.json())
-            .then(fotos => this.fotos = fotos, err => console.log(err))
+    this.service = new FotoService(this.$resource);
+    this.service.lista()
+      .then(fotos => this.fotos = fotos, err => console.log(err));
           
   }
   
